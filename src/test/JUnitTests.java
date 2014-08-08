@@ -31,6 +31,17 @@ public class JUnitTests
 	
 	//*** All slots filled properly ********************
 	@Test
+	public void slotTester()
+	{
+		int conference_hours = 10;
+		int[] slots = Slots.getSlots(conference_hours);
+		assertEquals(true, slots[0]==4);
+		assertEquals(true, slots[1]==3);
+		assertEquals(true, slots[2]==3);
+	}
+	
+	//*** All slots filled properly ********************
+	@Test
 	public void testMaximizeThePresenters()
 	{
 		int conference_hours = 10;
