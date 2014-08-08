@@ -1,0 +1,73 @@
+package test;
+
+import static org.junit.Assert.*;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.junit.Test;
+
+import service.ConferenceScheduler;
+import utils.PresenterInfo;
+import utils.Slots;
+
+public class JUnitTests 
+{
+	Map<String, PresenterInfo> pi_map = new HashMap<String, PresenterInfo>();
+	public JUnitTests()
+	{
+		pi_map.put("P1", new PresenterInfo("P1", 1, 100));
+		pi_map.put("P2", new PresenterInfo("P2", 2, 150));
+		pi_map.put("P3", new PresenterInfo("P3", 3, 200));
+		pi_map.put("P4", new PresenterInfo("P4", 3, 250));
+		pi_map.put("P5", new PresenterInfo("P5", 2, 200));
+		pi_map.put("P6", new PresenterInfo("P6", 1, 150));
+		pi_map.put("P7", new PresenterInfo("P7", 2, 200));
+		pi_map.put("P8", new PresenterInfo("P8", 3, 150));
+		pi_map.put("P9", new PresenterInfo("P9", 4, 350));
+		pi_map.put("P10", new PresenterInfo("P10", 2, 170));
+	}
+	
+	//*** All slots filled properly ********************
+	@Test
+	public void testMaximizeThePresenters()
+	{
+		int conference_hours = 10;
+		int[] slots = Slots.getSlots(conference_hours);
+		List<String> response = ConferenceScheduler.maximize_presenter_scheduler(slots, conference_hours, pi_map);
+		System.out.println(response);
+		assertEquals(true, response.contains("P5,P7,P10,P2,P6,P1,$970"));
+	}
+
+	//*** Partially filled slots ********************
+	@Test
+	public void partiallyFilledSlots()
+	{
+		int conference_hours = 5;
+		int[] slots = Slots.getSlots(conference_hours);
+		List<String> response = ConferenceScheduler.maximize_presenter_scheduler(slots, conference_hours, pi_map);
+		assertEquals(true, response.contains("P2,P6,P1,$400"));
+	}
+	
+	@Test
+	public void partiallyFilledSlots2()
+	{
+		int conference_hours = 4;
+		int[] slots = Slots.getSlots(conference_hours);
+		pi_map.put("P11", new PresenterInfo("P11", 1, 100));
+		List<String> response = ConferenceScheduler.maximize_presenter_scheduler(slots, conference_hours, pi_map);
+		assertEquals(true, response.contains("P11,P6,P1,$350"));//*** Having partially filled slots.
+		assertEquals(true, response.contains("P2,P11,P1,$350"));//*** Fully filled slots.
+	}
+
+	//*** Not enough presenter ********************
+	@Test
+	public void notEnoughPresenters()
+	{
+		int conference_hours = 3;
+		int[] slots = Slots.getSlots(conference_hours);
+		List<String> response = ConferenceScheduler.maximize_presenter_scheduler(slots, conference_hours, pi_map);
+		assertEquals(true, response.contains("Not enough presenters."));
+	}
+}
